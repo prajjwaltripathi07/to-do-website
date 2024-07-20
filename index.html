@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>to-do app</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<script>
+   function deletedone() {
+  console.log("Delete done");
+}
+
+function deletetodo(id) {
+  console.log(id);
+
+  fetch("http://localhost:3000/todos/" + id, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  })
+    .then(response => {
+      if (response.ok) {
+        deletedone();
+        const todoElement = document.getElementById("todo-" + id);
+        todoElement.remove();
+      } else {
+        throw new Error("Failed to delete todo");
+      }
+    })
+    .catch(error => {
+      console.error("Error:", error);
+    });
+}
+
+   function gotodata(data){
+    var parentElement = document.getElementById("container");
+   
+    for(var i = 0 ; i<data.length ; i++){
+        var childelement = document.createElement("div");
+
+        var grandchildelement1 = document.createElement("span");
+        grandchildelement1.innerHTML = data[i].title;
+
+        var grandchildelement2 = document.createElement("span");
+        grandchildelement2.innerHTML = data[i].description;
+
+        var grandchildelement3 = document.createElement("button");
+        grandchildelement3.innerHTML = "DELETE";
+        grandchildelement3.setAttribute("onclick","deletetodo(" + data[i].id + ")");
+
+        childelement.appendChild(grandchildelement1)
+        childelement.appendChild(grandchildelement2)
+        childelement.appendChild(grandchildelement3)
+
+        // childelement.id = "todo-" + data[i].id;
+        childelement.setAttribute("id","todo-" + data[i].id);
+
+        parentElement.appendChild(childelement);
+    }
+
+}
+
+function getdata(){
+    fetch("http://localhost:3000/todos",{
+        method : "GET",
+    }).then((resp) => {
+        resp.json().then(gotodata);
+    });
+}
+
+getdata();
+
+    function onpress(){
+
+        var title = document.getElementById("title").value;
+            
+        var description = document.getElementById("description").value;
+                
+        fetch("http://localhost:3000/todos" , {
+            method : "POST",
+            body : JSON.stringify({
+                title : title,
+                description : description
+            }),
+            headers : {
+                "Content-Type" : "application/json"
+            }
+        }).then(resp => {
+            resp.json().then((data) => {
+                console.log(data)
+
+        var parentElement = document.getElementById("container");
+        var childelement = document.createElement("div");
+
+        var grandchildelement1 = document.createElement("span");
+        grandchildelement1.innerHTML = data.title;
+
+        var grandchildelement2 = document.createElement("span");
+        grandchildelement2.innerHTML = data.description;
+
+        var grandchildelement3 = document.createElement("button");
+        grandchildelement3.innerHTML = "DELETE";
+        
+
+        childelement.appendChild(grandchildelement1);
+        childelement.appendChild(grandchildelement2);
+        childelement.appendChild(grandchildelement3);
+
+    
+        parentElement.appendChild(childelement);
+
+    })
+})
+        
+    }
+
+</script>
+<body>
+  <h1 class = "header">Todo List</h1>
+  <div class="todo-container">
+   <div class="input-section">
+<div class = "inputbox">
+
+  <div class="wave-group">
+    <input required="" type="text" class="input" id="title" class="title">
+    <span class="bar"></span>
+    <label class="label">
+      <span class="label-char" style="--index: 0">ti</span>
+      <span class="label-char" style="--index: 1">t</span>
+      <span class="label-char" style="--index: 2">l</span>
+      <span class="label-char" style="--index: 3">e</span>
+    </label>
+  </div>
+  <br>
+  
+  <div class="wave-group">
+    <input required="" type="text" class="input" id = "description" class="description">
+    <span class="bar"></span>
+    <label class="label">
+      <span class="label-char" style="--index: 0">des</span>
+      <span class="label-char" style="--index: 1">cri</span>
+      <span class="label-char" style="--index: 2">pti</span>
+      <span class="label-char" style="--index: 3">on</span>
+    </label>
+  </div>
+</div>
+             <br>
+             <div class="sendbutton" ><button class="button" onclick="onpress()">Send Todo</button>
+              
+              
+            </div>
+            <div class="containerparent">
+
+              <div class="container" id="container"></div>
+            </div>
+        </div>
+</body>
+</html>
